@@ -1,0 +1,50 @@
+name: messenger
+description: A beautiful cross-platform messenger
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Navigation
+  go_router: ^14.2.0
+
+  # Networking
+  dio: ^5.4.3
+  web_socket_channel: ^3.0.1
+
+  # Storage
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+
+  # UI
+  google_fonts: ^6.2.1
+  flutter_animate: ^4.5.0
+  cached_network_image: ^3.3.1
+  image_picker: ^1.1.2
+  intl: ^0.19.0
+
+  # Utils
+  uuid: ^4.4.0
+  timeago: ^3.6.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.11
+  riverpod_generator: ^2.4.3
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

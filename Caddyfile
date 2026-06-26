@@ -1,0 +1,22 @@
+# Replace :80 with your domain after setting up Cloudflare Tunnel
+{
+    admin off
+}
+
+:80 {
+    handle /ws {
+        reverse_proxy backend:8080 {
+            header_up Connection "Upgrade"
+            header_up Upgrade "websocket"
+        }
+    }
+    handle /api/* {
+        reverse_proxy backend:8080
+    }
+    handle /health {
+        reverse_proxy backend:8080
+    }
+    handle {
+        respond "Messenger" 200
+    }
+}

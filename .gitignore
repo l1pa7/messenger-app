@@ -1,0 +1,24 @@
+# Env
+.env
+*.env.local
+
+# Go
+backend/vendor/
+backend/*.exe
+backend/messenger
+
+# Flutter
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/build/
+frontend/android/.gradle/
+frontend/android/app/google-services.json
+frontend/ios/Pods/
+frontend/ios/Runner/GoogleService-Info.plist
+frontend/*.iml
+frontend/.idea/
+frontend/.vscode/
+
+# Docker
+*.log
