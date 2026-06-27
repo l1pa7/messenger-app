@@ -4,84 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="description" content="Скачай Messenger на Android, iPhone или Windows">
+<meta name="theme-color" content="#090A13">
 <title>Messenger — Скачать</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#090A13;--surface:#11121D;--surface2:#181929;
-  --border:#23243A;--primary:#7C6EFA;--primary-dim:#5A4DCC;
-  --text:#F0F0FF;--muted:#7B7A94;--hint:#3D3D55;
-}
-html,body{min-height:100vh;background:var(--bg);font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
+html,body{min-height:100vh;background:#090A13;font-family:'Inter',system-ui,sans-serif;color:#F0F0FF;-webkit-font-smoothing:antialiased}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;min-height:100vh}
-.wrap{width:100%;max-width:520px}
+.wrap{width:100%;max-width:540px}
 
-.hero{text-align:center;margin-bottom:36px}
-.logo{
-  width:80px;height:80px;border-radius:24px;
-  background:linear-gradient(145deg,#6C5CE7,#9B8CFF);
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:42px;margin-bottom:16px;
-  box-shadow:0 8px 32px rgba(108,92,231,0.35);
-}
-.hero h1{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
-.hero p{font-size:14px;color:var(--muted)}
+.hero{text-align:center;margin-bottom:32px}
+.logo{width:84px;height:84px;border-radius:24px;background:linear-gradient(145deg,#6C5CE7,#9B8CFF);display:inline-flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:16px;box-shadow:0 8px 32px rgba(108,92,231,.4)}
+h1{font-size:30px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px}
+.tagline{font-size:14px;color:#7B7A94}
 
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.card{
-  background:var(--surface);border:1.5px solid var(--border);border-radius:16px;
-  padding:18px 12px;cursor:pointer;text-align:center;
-  transition:border-color .15s,box-shadow .15s;
-  text-decoration:none;display:block;color:inherit;
-}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.card{background:#11121D;border:1.5px solid #23243A;border-radius:16px;padding:18px 12px;cursor:pointer;text-align:center;transition:border-color .15s,box-shadow .15s;text-decoration:none;color:inherit;display:block;position:relative}
 .card:hover{border-color:#4A4A80}
-.card.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,110,250,.14)}
+.card.active{border-color:#7C6EFA;box-shadow:0 0 0 3px rgba(124,110,250,.14)}
 .card-icon{font-size:32px;margin-bottom:10px}
 .card-name{font-size:14px;font-weight:600;margin-bottom:3px}
-.card-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
-.card-badge{
-  font-size:10px;font-weight:600;color:var(--primary);
-  margin-top:8px;letter-spacing:0.2px;
-}
-.btn{
-  display:block;width:100%;padding:9px 0;border-radius:10px;border:none;
-  background:var(--primary);color:#fff;font-size:13px;font-weight:600;
-  cursor:pointer;transition:background .15s;letter-spacing:0.1px;
-  font-family:inherit;
-}
-.btn:hover{background:var(--primary-dim)}
-.btn.ghost{
-  background:transparent;border:1.5px solid var(--border);color:var(--muted);
-  font-size:12px;
-}
-.btn.ghost:hover{border-color:#4A4A80;color:var(--text)}
+.card-sub{font-size:11px;color:#6B6A84;margin-bottom:14px;line-height:1.4}
+.btn{display:block;width:100%;padding:9px 0;border-radius:10px;border:none;background:#7C6EFA;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;text-decoration:none}
+.btn:hover{background:#6456D4}
+.btn.ghost{background:transparent;border:1.5px solid #23243A;color:#6B6A84;font-size:11px}
+.badge-pill{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#7C6EFA;color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;letter-spacing:.3px}
+.detected-label{text-align:center;font-size:12px;color:#7C6EFA;font-weight:600;margin-bottom:20px;min-height:18px}
 
-.detected-badge{
-  text-align:center;font-size:12px;color:var(--primary);
-  font-weight:600;margin-bottom:20px;min-height:18px;letter-spacing:0.2px;
-}
+/* iPhone PWA banner */
+.pwa-banner{background:linear-gradient(135deg,#1A1528,#1C1829);border:1px solid #7C6EFA44;border-radius:16px;padding:18px;margin-bottom:14px;display:none}
+.pwa-banner.show{display:block}
+.pwa-steps{list-style:none;margin-top:12px}
+.pwa-steps li{font-size:13px;color:#C0BFDA;padding:4px 0;display:flex;align-items:center;gap:8px}
+.pwa-steps li span.num{background:#7C6EFA22;color:#7C6EFA;font-size:11px;font-weight:700;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.pwa-cta{display:block;margin-top:14px;padding:10px;background:#7C6EFA;border-radius:10px;text-align:center;color:#fff;font-weight:600;font-size:13px;text-decoration:none}
+.pwa-cta:hover{background:#6456D4}
 
-.qr-block{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:16px;padding:20px;display:flex;align-items:center;gap:18px;
-  margin-bottom:20px;
-}
+.qr-block{background:#11121D;border:1px solid #23243A;border-radius:16px;padding:18px;display:flex;align-items:center;gap:18px;margin-bottom:20px}
 .qr-wrap{background:#fff;padding:8px;border-radius:10px;flex-shrink:0}
 .qr-text h3{font-size:14px;font-weight:600;margin-bottom:5px}
-.qr-text p{font-size:12px;color:var(--muted);line-height:1.6}
+.qr-text p{font-size:12px;color:#6B6A84;line-height:1.6}
 
-.footer{text-align:center;font-size:11px;color:var(--hint);line-height:1.8}
-.footer a{color:var(--hint);text-decoration:none}
-.footer a:hover{color:var(--muted)}
-
-.version-pill{
-  display:inline-block;padding:3px 10px;border-radius:20px;
-  background:rgba(124,110,250,.12);color:var(--primary);
-  font-size:11px;font-weight:600;margin-bottom:20px;letter-spacing:0.3px;
-}
+.version-badge{text-align:center;margin-bottom:20px}
+.vpill{display:inline-block;padding:3px 12px;border-radius:20px;background:rgba(124,110,250,.12);color:#7C6EFA;font-size:11px;font-weight:600;letter-spacing:.3px}
+.footer{text-align:center;font-size:11px;color:#2E2E45;line-height:2}
+.footer a{color:#2E2E45;text-decoration:none}.footer a:hover{color:#6B6A84}
 
 @media(max-width:400px){
   .cards{grid-template-columns:1fr}
@@ -95,95 +64,118 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   <div class="hero">
     <div class="logo">⚡</div>
     <h1>Messenger</h1>
-    <p>Быстрый, красивый и безопасный мессенджер</p>
+    <p class="tagline">Быстрый, красивый и безопасный мессенджер</p>
   </div>
 
-  <div style="text-align:center;margin-bottom:24px;">
-    <span class="version-pill" id="version-pill">Актуальная версия</span>
+  <div class="version-badge">
+    <span class="vpill" id="vpill">Актуальная версия</span>
   </div>
 
-  <div class="cards" id="cards">
-
-    <a class="card" data-p="android" id="card-android"
-       href="https://github.com/l1pa7/messenger-app/releases/latest/download/messenger.apk">
+  <div class="cards">
+    <a class="card" id="c-android" href="https://github.com/l1pa7/messenger-app/releases/latest/download/messenger.apk">
       <div class="card-icon">🤖</div>
       <div class="card-name">Android</div>
       <div class="card-sub">APK · ~25 MB</div>
-      <button class="btn" onclick="event.preventDefault();window.open('https://github.com/l1pa7/messenger-app/releases/latest/download/messenger.apk')">Скачать</button>
-      <div class="card-badge" id="badge-android"></div>
+      <span class="btn">Скачать APK</span>
+      <div class="badge-pill" id="b-android" style="display:none">Твоё устройство</div>
     </a>
 
-    <a class="card" data-p="windows" id="card-windows"
-       href="https://github.com/l1pa7/messenger-app/releases/latest/download/messenger-windows.zip">
+    <a class="card" id="c-windows" href="https://github.com/l1pa7/messenger-app/releases/latest/download/messenger-windows.zip">
       <div class="card-icon">🪟</div>
       <div class="card-name">Windows</div>
       <div class="card-sub">EXE · ~45 MB</div>
-      <button class="btn" onclick="event.preventDefault();window.open('https://github.com/l1pa7/messenger-app/releases/latest/download/messenger-windows.zip')">Скачать</button>
-      <div class="card-badge" id="badge-windows"></div>
+      <span class="btn">Скачать EXE</span>
+      <div class="badge-pill" id="b-windows" style="display:none">Твоё устройство</div>
     </a>
 
-    <a class="card" data-p="ios" id="card-ios"
-       href="https://testflight.apple.com/join/PLACEHOLDER">
+    <a class="card" id="c-ios" href="./app/" onclick="handleIos(event)">
       <div class="card-icon">🍎</div>
       <div class="card-name">iPhone</div>
-      <div class="card-sub">TestFlight</div>
-      <button class="btn ghost">Скоро</button>
-      <div class="card-badge" id="badge-ios"></div>
+      <div class="card-sub">PWA · Без App Store · Бесплатно</div>
+      <span class="btn">Установить</span>
+      <div class="badge-pill" id="b-ios" style="display:none">Твоё устройство</div>
     </a>
-
   </div>
 
-  <div class="detected-badge" id="detected"></div>
+  <div class="detected-label" id="detected"></div>
+
+  <!-- PWA инструкция для iPhone (показывается автоматически) -->
+  <div class="pwa-banner" id="pwa-banner">
+    <strong style="font-size:14px;font-weight:600;">📱 Установить на iPhone — без App Store</strong>
+    <ol class="pwa-steps">
+      <li><span class="num">1</span> Нажми кнопку «Установить» выше — откроется приложение в Safari</li>
+      <li><span class="num">2</span> Внизу Safari нажми кнопку <strong style="color:#7C6EFA">«Поделиться»</strong> (квадрат со стрелкой ↑)</li>
+      <li><span class="num">3</span> Выбери <strong style="color:#7C6EFA">«На экран «Домой»»</strong></li>
+      <li><span class="num">4</span> Нажми «Добавить» — иконка появится на рабочем столе</li>
+    </ol>
+    <a class="pwa-cta" href="./app/">Открыть приложение в Safari →</a>
+  </div>
 
   <div class="qr-block">
-    <div class="qr-wrap">
-      <div id="qr"></div>
-    </div>
+    <div class="qr-wrap"><div id="qr"></div></div>
     <div class="qr-text">
-      <h3>Открыть с телефона</h3>
-      <p>Наведи камеру на QR-код — попадёшь прямо сюда и скачаешь подходящую версию</p>
+      <h3>Открыть с любого телефона</h3>
+      <p>Наведи камеру на QR-код — попадёшь прямо сюда и скачаешь нужную версию</p>
     </div>
   </div>
 
   <div class="footer">
-    🔒 Сквозное E2E шифрование · X25519 + AES-256-GCM<br>
+    🔒 E2EE · X25519 + AES-256-GCM · Открытый исходный код<br>
     <a href="https://github.com/l1pa7/messenger-app">GitHub</a> ·
     <a href="https://github.com/l1pa7/messenger-app/releases">Все версии</a> ·
-    <a href="https://github.com/l1pa7/messenger-app/blob/main/SECURITY.md">Безопасность</a>
+    <a href="https://github.com/l1pa7/messenger-app/blob/main/SECURITY.md">Безопасность</a> ·
+    <a href="https://github.com/l1pa7/messenger-app/blob/main/DEPLOYMENT.md">Установка сервера</a>
   </div>
-
 </div>
+
 <script>
-const PAGE='https://l1pa7.github.io/messenger-app';
-const ua=navigator.userAgent;
-let p='windows';
-if(/android/i.test(ua))p='android';
-else if(/iphone|ipad|ipod/i.test(ua))p='ios';
+const PAGE = 'https://l1pa7.github.io/messenger-app';
+const ua   = navigator.userAgent;
+let platform = 'windows';
+if (/android/i.test(ua))             platform = 'android';
+else if (/iphone|ipad|ipod/i.test(ua)) platform = 'ios';
 
-const card=document.getElementById('card-'+p);
-if(card){
-  card.classList.add('active');
-  const badge=document.getElementById('badge-'+p);
-  if(badge)badge.textContent='✓ Твоё устройство';
+// Подсветить нужную карточку
+const card = document.getElementById('c-' + platform);
+const badge = document.getElementById('b-' + platform);
+if (card)  card.classList.add('active');
+if (badge) badge.style.display = '';
+
+// Показать PWA баннер для iPhone
+if (platform === 'ios') {
+  document.getElementById('pwa-banner').classList.add('show');
 }
-const labels={
-  android:'🤖 Определён Android — рекомендуем APK',
-  ios:'🍎 Определён iPhone — рекомендуем TestFlight',
-  windows:'🪟 Определён Windows — рекомендуем EXE'
+
+// Метка
+const labels = {
+  android: '🤖 Определён Android — рекомендуем APK',
+  ios:     '🍎 Определён iPhone — установи PWA бесплатно (без App Store)',
+  windows: '🪟 Определён Windows — рекомендуем EXE'
 };
-document.getElementById('detected').textContent=labels[p]||'';
+document.getElementById('detected').textContent = labels[platform] || '';
 
+// Для iOS — клик на карточку показывает инструкцию вместо перехода
+function handleIos(e) {
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+    // Прокрутить к баннеру
+    document.getElementById('pwa-banner').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+// Актуальная версия с GitHub API
 fetch('https://api.github.com/repos/l1pa7/messenger-app/releases/latest')
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.tag_name){
-      document.getElementById('version-pill').textContent=d.tag_name+' · Актуальная версия';
-    }
-  }).catch(()=>{});
+  .then(r => r.json())
+  .then(d => {
+    if (d.tag_name) document.getElementById('vpill').textContent = d.tag_name + ' · актуально';
+  }).catch(() => {});
 
-try{
-  new QRCode(document.getElementById('qr'),{text:PAGE,width:100,height:100,colorDark:'#000',colorLight:'#fff'});
-}catch(e){}
+// QR-код
+try {
+  new QRCode(document.getElementById('qr'), {
+    text: PAGE, width: 100, height: 100,
+    colorDark: '#000000', colorLight: '#ffffff'
+  });
+} catch(e) {}
 </script>
 </body>
 </html>

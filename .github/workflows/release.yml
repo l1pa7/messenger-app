@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   # ── Android APK ─────────────────────────────────────────────────────────────
@@ -15,33 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.x'
           channel: stable
-
-      - name: Get dependencies
+      - run: flutter pub get
         working-directory: frontend
-        run: flutter pub get
-
       - name: Build APK
         working-directory: frontend
         run: |
           flutter build apk --release \
             --dart-define=API_URL=${{ vars.API_URL || 'https://your-domain.com/api' }} \
-            --dart-define=WS_URL=${{ vars.WS_URL   || 'wss://your-domain.com' }}
-
-      - name: Rename APK
-        run: |
-          cp frontend/build/app/outputs/flutter-apk/app-release.apk \
-             messenger.apk
-
+            --dart-define=WS_URL=${{ vars.WS_URL || 'wss://your-domain.com' }}
+      - run: cp frontend/build/app/outputs/flutter-apk/app-release.apk messenger.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
@@ -54,41 +46,66 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.x'
           channel: stable
-
-      - name: Get dependencies
+      - run: flutter pub get
         working-directory: frontend
-        run: flutter pub get
-
       - name: Build Windows
         working-directory: frontend
         run: |
           flutter build windows --release `
             --dart-define=API_URL=${{ vars.API_URL || 'https://your-domain.com/api' }} `
-            --dart-define=WS_URL=${{ vars.WS_URL   || 'wss://your-domain.com' }}
-
-      - name: Zip release
+            --dart-define=WS_URL=${{ vars.WS_URL || 'wss://your-domain.com' }}
+      - name: Zip
         shell: pwsh
-        run: |
-          Compress-Archive `
-            -Path frontend/build/windows/x64/runner/Release/* `
-            -DestinationPath messenger-windows.zip
-
+        run: Compress-Archive -Path frontend/build/windows/x64/runner/Release/* -DestinationPath messenger-windows.zip
       - uses: actions/upload-artifact@v4
         with:
           name: windows-zip
           path: messenger-windows.zip
           retention-days: 1
 
+  # ── Flutter Web PWA (iPhone + любой браузер) ─────────────────────────────────
+  build-web:
+    name: Web PWA (iPhone)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: stable
+      - run: flutter pub get
+        working-directory: frontend
+      - name: Build Web
+        working-directory: frontend
+        run: |
+          flutter build web --release \
+            --web-renderer canvaskit \
+            --base-href /messenger-app/app/ \
+            --dart-define=API_URL=${{ vars.API_URL || 'https://your-domain.com/api' }} \
+            --dart-define=WS_URL=${{ vars.WS_URL || 'wss://your-domain.com' }}
+      - name: Copy to docs/app
+        run: |
+          rm -rf docs/app
+          mkdir -p docs/app
+          cp -r frontend/build/web/. docs/app/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-pwa
+          path: docs/
+          retention-days: 1
+
   # ── GitHub Release ───────────────────────────────────────────────────────────
   release:
     name: Create Release
-    needs: [build-android, build-windows]
+    needs: [build-android, build-windows, build-web]
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-pages.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -96,25 +113,36 @@ jobs:
         with:
           merge-multiple: true
 
-      - name: Create GitHub Release
+      # Обновить docs/ (landing page + PWA) и задеплоить на Pages
+      - name: Update docs from artifact
+        run: |
+          cp -r docs-artifact/. docs/ 2>/dev/null || true
+        continue-on-error: true
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deploy-pages
+        uses: actions/deploy-pages@v4
+
+      # Создать GitHub Release
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           name: "Messenger ${{ github.ref_name }}"
           body: |
             ## Messenger ${{ github.ref_name }}
 
-            ### Скачать
-            | Платформа | Файл |
-            |-----------|------|
-            | 🤖 Android | [messenger.apk](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger.apk) |
-            | 🪟 Windows | [messenger-windows.zip](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger-windows.zip) |
-            | 🍎 iPhone  | Скоро (нужен Apple Developer Account) |
+            | Платформа | Установка |
+            |-----------|-----------|
+            | 🤖 Android | [Скачать APK](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger.apk) |
+            | 🪟 Windows | [Скачать ZIP](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger-windows.zip) |
+            | 🍎 iPhone  | [Открыть PWA в Safari](https://l1pa7.github.io/messenger-app/app/) → Поделиться → На экран «Домой» |
 
-            ### Страница загрузки
-            👉 https://l1pa7.github.io/messenger-app
-
-            ### Изменения
-            <!-- опиши изменения -->
+            👉 **Страница загрузки:** https://l1pa7.github.io/messenger-app
           files: |
             messenger.apk
             messenger-windows.zip
