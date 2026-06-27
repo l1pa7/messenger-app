@@ -1,8 +1,6 @@
 package config
 
-import (
-	"os"
-)
+import "os"
 
 type Config struct {
 	DBHost     string
@@ -20,8 +18,10 @@ type Config struct {
 	MinioPassword string
 	MinioBucket   string
 
-	JWTSecret  string
-	ServerPort string
+	JWTSecret     string
+	MessageEncKey string // AES-256 ключ для server-side шифрования сообщений
+	AllowedOrigins string // "https://myapp.com,https://app.myapp.com"
+	ServerPort    string
 }
 
 func Load() *Config {
@@ -34,15 +34,17 @@ func Load() *Config {
 
 		RedisHost:     getEnv("REDIS_HOST", "localhost"),
 		RedisPort:     getEnv("REDIS_PORT", "6379"),
-		RedisPassword: getEnv("REDIS_PASSWORD", "redispass"),
+		RedisPassword: getEnv("REDIS_PASSWORD", ""),
 
 		MinioEndpoint: getEnv("MINIO_ENDPOINT", "localhost:9000"),
 		MinioUser:     getEnv("MINIO_USER", "minioadmin"),
 		MinioPassword: getEnv("MINIO_PASSWORD", "minioadmin"),
 		MinioBucket:   getEnv("MINIO_BUCKET", "messenger-files"),
 
-		JWTSecret:  getEnv("JWT_SECRET", "changeme"),
-		ServerPort: getEnv("SERVER_PORT", "8080"),
+		JWTSecret:      getEnv("JWT_SECRET", ""),
+		MessageEncKey:  getEnv("MESSAGE_ENC_KEY", ""),
+		AllowedOrigins: getEnv("ALLOWED_ORIGINS", "http://localhost"),
+		ServerPort:     getEnv("SERVER_PORT", "8080"),
 	}
 }
 
