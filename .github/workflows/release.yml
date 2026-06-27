@@ -1,0 +1,121 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # ── Android APK ─────────────────────────────────────────────────────────────
+  build-android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: stable
+
+      - name: Get dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: frontend
+        run: |
+          flutter build apk --release \
+            --dart-define=API_URL=${{ vars.API_URL || 'https://your-domain.com/api' }} \
+            --dart-define=WS_URL=${{ vars.WS_URL   || 'wss://your-domain.com' }}
+
+      - name: Rename APK
+        run: |
+          cp frontend/build/app/outputs/flutter-apk/app-release.apk \
+             messenger.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: messenger.apk
+          retention-days: 1
+
+  # ── Windows EXE ─────────────────────────────────────────────────────────────
+  build-windows:
+    name: Windows EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: stable
+
+      - name: Get dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Build Windows
+        working-directory: frontend
+        run: |
+          flutter build windows --release `
+            --dart-define=API_URL=${{ vars.API_URL || 'https://your-domain.com/api' }} `
+            --dart-define=WS_URL=${{ vars.WS_URL   || 'wss://your-domain.com' }}
+
+      - name: Zip release
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path frontend/build/windows/x64/runner/Release/* `
+            -DestinationPath messenger-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: messenger-windows.zip
+          retention-days: 1
+
+  # ── GitHub Release ───────────────────────────────────────────────────────────
+  release:
+    name: Create Release
+    needs: [build-android, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Messenger ${{ github.ref_name }}"
+          body: |
+            ## Messenger ${{ github.ref_name }}
+
+            ### Скачать
+            | Платформа | Файл |
+            |-----------|------|
+            | 🤖 Android | [messenger.apk](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger.apk) |
+            | 🪟 Windows | [messenger-windows.zip](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/messenger-windows.zip) |
+            | 🍎 iPhone  | Скоро (нужен Apple Developer Account) |
+
+            ### Страница загрузки
+            👉 https://l1pa7.github.io/messenger-app
+
+            ### Изменения
+            <!-- опиши изменения -->
+          files: |
+            messenger.apk
+            messenger-windows.zip
+          generate_release_notes: true
