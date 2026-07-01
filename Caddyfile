@@ -1,9 +1,11 @@
-# Replace :80 with your domain after setting up Cloudflare Tunnel
 {
     admin off
 }
 
-:80 {
+# sslip.io превращает IP в домен бесплатно и без регистрации.
+# Caddy автоматически получает настоящий Let's Encrypt TLS сертификат
+# и сам редиректит весь HTTP трафик на HTTPS.
+95.139.86.107.sslip.io {
     handle /ws {
         reverse_proxy backend:8080 {
             header_up Connection "Upgrade"
@@ -17,6 +19,6 @@
         reverse_proxy backend:8080
     }
     handle {
-        respond "Messenger" 200
+        respond "Messenger API" 200
     }
 }
